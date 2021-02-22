@@ -1,0 +1,25 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (console)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/mermaid-gen/bin/Debug/net5.0/mermaid-gen.dll",
+            "args": ["generate", "-a", "${workspaceFolder}/mermaid-gen.Tests/testAssets/Models.dll", "-t", "er", "-o", "${workspaceFolder}/mermaid-gen/bin/Debug/net5.0/mermaid.md"],
+            "cwd": "${workspaceFolder}/mermaid-gen",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}"
+        }
+    ]
+}

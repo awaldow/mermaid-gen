@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mermaid-gen", "mermaid-gen\mermaid-gen.csproj", "{6420192A-0780-4DC2-8E06-4B5CD6217B04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mermaid-gen.generator", "mermaid-gen.generator\mermaid-gen.generator.csproj", "{578DA480-9F84-4279-9FD6-570E60405F94}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mermaid-gen.generators", "mermaid-gen.generators\mermaid-gen.generators.csproj", "{578DA480-9F84-4279-9FD6-570E60405F94}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mermaid-gen.Tests", "mermaid-gen.Tests\mermaid-gen.Tests.csproj", "{4A2FC85F-9DF9-4F5B-8CFC-33C59B82A02D}"
 EndProject

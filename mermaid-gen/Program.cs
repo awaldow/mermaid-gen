@@ -1,5 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using mermaid_gen.generators;
 
 namespace mermaid_gen
 {
@@ -22,7 +25,33 @@ namespace mermaid_gen
                                 Directory.CreateDirectory(Path.GetDirectoryName(argsParsed.OutputPath));
                             }
 
-                            return (int)exitCode;
+                            var convertedAssemblyPath = Path.Combine(Directory.GetCurrentDirectory(), argsParsed.InputAssemblyPath);
+                            Assembly startupAssembly = Assembly.LoadFrom(convertedAssemblyPath);
+
+                            switch (argsParsed.DiagramType)
+                            {
+                                case MermaidDiagramType.ER:
+                                    {
+                                        var erGenerator = new ErGenerator(startupAssembly.GetTypes().ToList());
+                                        erGenerator.Generate();
+                                        Console.WriteLine($"Mermaid ER diagram generated from {argsParsed.InputAssemblyPath}");
+                                        try
+                                        {
+                                            File.WriteAllText(argsParsed.OutputPath, erGenerator.ErDiagram);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            Console.WriteLine(e.Message);
+                                            return (int)ExitCode.Error;
+                                        }
+                                        return (int)exitCode;
+                                    }
+                                default:
+                                    {
+                                        Console.WriteLine($"No valid diagram type generator found for {argsParsed.DiagramType.ToString()}");
+                                        return (int)ExitCode.Error;
+                                    }
+                            }
                         }
                     case "_generate":
                         {

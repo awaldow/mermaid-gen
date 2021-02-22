@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>mermaid_gen.generator</RootNamespace>
+    <RootNamespace>mermaid_gen.generators</RootNamespace>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
 </Project>

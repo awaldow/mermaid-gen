@@ -20,4 +20,8 @@
     <Description>A command line utility to consume an assembly with EF Core POCOs and generate ER or class diagrams.</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\mermaid-gen.generators\mermaid-gen.generators.csproj" />
+  </ItemGroup>
+  
 </Project>

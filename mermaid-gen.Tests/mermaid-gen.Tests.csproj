@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>mermaid_gen.Tests</RootNamespace>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
