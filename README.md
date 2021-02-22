@@ -4,7 +4,6 @@
     dotnet tool install -g mermaid-gen
     ```
 2. Verify that the tool was installed correctly
-
     ```
     mermaid-gen --help
     ```
