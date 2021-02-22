@@ -82,6 +82,7 @@ namespace mermaid_gen.generators
                     else
                     {
                         // One to one relationship
+                        // TODO: Refine this check; need the secondary types foreign key property to match entity's ID type, for example
                         if (prop.PropertyType.GetProperties().Any(p => p.PropertyType == entity) && prop.PropertyType.GetProperties().Any(p => p.Name.StartsWith(entity.Name)))
                         {
                             relationship.primarySideRelationship = "||";
@@ -102,6 +103,7 @@ namespace mermaid_gen.generators
                         // optional foreign key
                         else
                         {
+                            // TODO: probably do some additional checking here
                             relationship.primarySideRelationship = "||";
                             relationship.label = "has";
                             relationship.secondarySideRelationship = "o|";
