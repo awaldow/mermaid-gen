@@ -10,7 +10,7 @@
     ```
 3. Generate a mermaid ER diagram from a provided assembly
     ```
-   mermaid-gen generate -a [assemblyPath] -o [outputDir] -t er
+    mermaid-gen generate -a [assemblyPath] -o [outputDir] -t er
     ```
     Where 
     * [assemblyPath] = path to target assembly
