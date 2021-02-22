@@ -8,9 +8,10 @@ namespace mermaid_gen
         public string Command { get; set; }
         public MermaidDiagramType DiagramType { get; set; }
         public string InputAssemblyPath { get; set; }
+        public string OutputPath { get; set; }
 
         public static readonly string[] acceptedCommands = { "generate", "_generate", "--help" };
-        private static readonly string[] acceptedArgs = { "-a", "--input-assembly-path", "-t", "--diagram-type" };
+        private static readonly string[] acceptedArgs = { "-a", "--input-assembly-path", "-t", "--diagram-type", "-o", "--output-path", };
 
         public static (ExitCode, string) TryParse(string[] args, out ArgsParser argsParser)
         {
@@ -35,6 +36,12 @@ namespace mermaid_gen
                             if (acceptedArgs.Contains(args[i + 1]))
                                 return (ExitCode.Error, $"");
                             argsParser.InputAssemblyPath = args[i + 1];
+                            break;
+                        case "-o":
+                        case "--output-path":
+                            if (acceptedArgs.Contains(args[i + 1]))
+                                return (ExitCode.Error, $"");
+                            argsParser.OutputPath = args[i + 1];
                             break;
                         case "-t":
                         case "--diagram-type":
