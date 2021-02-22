@@ -79,6 +79,7 @@ namespace mermaid_gen.generators
 
                         relationship.secondarySideRelationship = "o|";
                         relationship.secondaryDefined = false;
+                        relationship.isIdentifying = false;
                     }
                     else
                     {
@@ -96,6 +97,7 @@ namespace mermaid_gen.generators
                         {
                             relationship.secondarySideRelationship = "o|";
                             relationship.secondaryDefined = false;
+                            relationship.isIdentifying = false;
                         }
                     }
 
