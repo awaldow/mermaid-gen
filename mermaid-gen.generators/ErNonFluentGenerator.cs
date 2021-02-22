@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,45 +21,106 @@ namespace mermaid_gen.generators
 
         private readonly List<Type> _assemblyTypes;
 
-        private readonly List<RecognizedRelationship> _recognizedRelationship;
+        private readonly List<RecognizedRelationship> _recognizedRelationships;
 
         public ErNonFluentGenerator(List<Type> assemblyTypes)
         {
             _assemblyTypes = assemblyTypes;
             _erDiagram = new StringBuilder("erDiagram\n");
-            _recognizedRelationship = new List<RecognizedRelationship>();
+            _recognizedRelationships = new List<RecognizedRelationship>();
         }
 
         public void Generate()
         {
             foreach (var entity in _assemblyTypes)
             {
-                _erDiagram.AppendLine(GenerateRelationshipsSection(entity));
+                GenerateRelationships(entity);
                 _erDiagram.AppendLine(GenerateEntitySection(entity));
+            }
+            foreach (var relationship in _recognizedRelationships)
+            {
+                _erDiagram.AppendLine(GenerateRelationshipSection(relationship));
             }
         }
 
-        private string GenerateRelationshipsSection(Type entity)
+        private string GenerateRelationshipSection(RecognizedRelationship relationship)
         {
-            var ret = "";
+            var ret = $"\t{relationship.primary.Name.ToUpper()} {relationship.primarySideRelationship}";
+            if (relationship.isIdentifying) ret += $"--";
+            else ret += $"..";
+            if (relationship.secondary.IsEnum)
+            {
+                ret += $"{relationship.secondarySideRelationship} {relationship.secondary.Name.ToUpper()}_ENUM : {relationship.label}";
+            }
+            else
+            {
+                ret += $"{relationship.secondarySideRelationship} {relationship.secondary.Name.ToUpper()} : {relationship.label}";
+            }
+            return ret;
+        }
+
+        private void GenerateRelationships(Type entity)
+        {
             foreach (var prop in entity.GetProperties())
             {
-                if (prop.GetGetMethod().IsVirtual && _assemblyTypes.Any(t => t.Name.ToUpper() == prop.PropertyType.Name.ToUpper())) // Found a relationship by convention
+                if (_assemblyTypes.Any(t => t.Name.ToUpper() == prop.PropertyType.Name.ToUpper())) // Possible relationship found
                 {
-                    if (!_recognizedRelationship.Any(rr => (rr.primary == entity && rr.secondary == prop.PropertyType) || (rr.primary == prop.PropertyType && rr.secondary == entity)))
+                    var relationship = new RecognizedRelationship
                     {
-                        if (prop.GetCustomAttributes().Any(a => a.GetType().Name == "RequiredAttribute"))
+                        primary = entity,
+                        secondary = prop.PropertyType,
+                        secondaryDefined = false
+                    };
+                    // If the property is nullable, by convention that means it's optional
+                    if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        relationship.primarySideRelationship = "|o";
+                        relationship.label = "may have";
+                    }
+                    else
+                    {
+                        relationship.primarySideRelationship = "||";
+                        relationship.label = "has";
+                        // Now check other side for defined relationship
+                        // By convention, if there's an inverse navigation property and an explicit Id column on the secondary entity, we have a defined one-to-one relationship
+                        if (prop.PropertyType.GetProperties().Any(p => p.PropertyType == entity) && prop.PropertyType.GetProperties().Any(p => p.Name.StartsWith(entity.Name)))
                         {
-                            ret += $"\t{entity.Name.ToUpper()} ||--|| {prop.PropertyType.Name.ToUpper()}";
+                            relationship.secondarySideRelationship = "||";
+                            relationship.secondaryDefined = true;
+                            relationship.isIdentifying = true;
                         }
                         else
                         {
-                            ret += $"\t{entity.Name.ToUpper()} |o--o| {prop.PropertyType.Name.ToUpper()}";
+                            relationship.secondarySideRelationship = "o|";
+                            relationship.secondaryDefined = false;
                         }
                     }
+
+                    _recognizedRelationships.Add(relationship);
+                }
+                else if (typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string)) // Found a one-to-many relationship by convention
+                {
+                    var relationship = new RecognizedRelationship
+                    {
+                        primary = entity,
+                        secondary = prop.PropertyType.GenericTypeArguments[0],
+                        secondaryDefined = false,
+                        primarySideRelationship = "||",
+                        label = "has"
+                    };
+
+                    if (relationship.secondary.GetProperties().Any(p => p.Name.StartsWith(entity.Name)) || relationship.secondary.GetProperties().Any(p => p.PropertyType == entity))
+                    {
+                        relationship.secondarySideRelationship = "o{";
+                        relationship.isIdentifying = true;
+                    }
+                    else
+                    {
+                        relationship.secondarySideRelationship = "o{";
+                    }
+                    _recognizedRelationships.Add(relationship);
                 }
             }
-            return ret;
         }
 
         private string GenerateEntitySection(Type entity)
@@ -90,7 +152,14 @@ namespace mermaid_gen.generators
                         }
                         else
                         {
-                            ret += $"\t\t{prop.PropertyType.Name.ToLower()} {prop.Name}\n";
+                            if (typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string))
+                            {
+                                ret += $"\t\t{prop.PropertyType.Name.ToLower().Remove(prop.PropertyType.Name.IndexOf('`'))}Of{prop.PropertyType.GetGenericArguments()[0].Name.ToUpper()}s {prop.Name}\n";
+                            }
+                            else
+                            {
+                                ret += $"\t\t{prop.PropertyType.Name.ToLower()} {prop.Name}\n";
+                            }
                         }
                     }
                 }

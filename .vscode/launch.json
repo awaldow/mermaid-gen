@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/mermaid-gen/bin/Debug/net5.0/mermaid-gen.dll",
-            "args": ["generate", "-a", "${workspaceFolder}/mermaid-gen.Tests/testAssets/Models.dll", "-t", "er", "-o", "${workspaceFolder}/mermaid-gen/bin/Debug/net5.0/mermaid.md"],
+            "args": ["generate", "-a", "${workspaceFolder}/mermaid-gen.Tests/testAssets/Models.dll", "-t", "er", "-o", "${workspaceFolder}/mermaid-gen/bin/Debug/net5.0/mermaid.mmd"],
             "cwd": "${workspaceFolder}/mermaid-gen",
             "console": "internalConsole",
             "stopAtEntry": false
