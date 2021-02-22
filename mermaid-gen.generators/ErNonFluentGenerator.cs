@@ -69,7 +69,6 @@ namespace mermaid_gen.generators
                     {
                         primary = entity,
                         secondary = prop.PropertyType,
-                        secondaryDefined = false
                     };
                     // If the property is nullable, by convention that means it's optional
                     if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -78,30 +77,41 @@ namespace mermaid_gen.generators
                         relationship.label = "may have";
 
                         relationship.secondarySideRelationship = "o|";
-                        relationship.secondaryDefined = false;
                         relationship.isIdentifying = false;
                     }
                     else
                     {
-                        relationship.primarySideRelationship = "||";
-                        relationship.label = "has";
-                        // Now check other side for defined relationship
-                        // By convention, if there's an inverse navigation property and an explicit Id column on the secondary entity, we have a defined one-to-one relationship
+                        // One to one relationship
                         if (prop.PropertyType.GetProperties().Any(p => p.PropertyType == entity) && prop.PropertyType.GetProperties().Any(p => p.Name.StartsWith(entity.Name)))
                         {
+                            relationship.primarySideRelationship = "||";
+                            relationship.label = "has";
                             relationship.secondarySideRelationship = "||";
-                            relationship.secondaryDefined = true;
                             relationship.isIdentifying = true;
                         }
+                        // many to one from secondary
+                        else if (prop.PropertyType.GetProperties().Any(p =>
+                            typeof(IEnumerable).IsAssignableFrom(p.PropertyType) && p.PropertyType != typeof(string) && p.PropertyType.GetGenericArguments()[0] == entity)
+                        )
+                        {
+                            relationship.primarySideRelationship = "}o";
+                            relationship.label = "has";
+                            relationship.secondarySideRelationship = "||";
+                            relationship.isIdentifying = true;
+                        }
+                        // optional foreign key
                         else
                         {
+                            relationship.primarySideRelationship = "||";
+                            relationship.label = "has";
                             relationship.secondarySideRelationship = "o|";
-                            relationship.secondaryDefined = false;
                             relationship.isIdentifying = false;
                         }
                     }
-
-                    _recognizedRelationships.Add(relationship);
+                    if (!_recognizedRelationships.RelationshipExists(relationship))
+                    {
+                        _recognizedRelationships.Add(relationship);
+                    }
                 }
                 else if (typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string)) // Found a one-to-many relationship by convention
                 {
@@ -109,7 +119,6 @@ namespace mermaid_gen.generators
                     {
                         primary = entity,
                         secondary = prop.PropertyType.GenericTypeArguments[0],
-                        secondaryDefined = false,
                         primarySideRelationship = "||",
                         label = "has",
                         secondarySideRelationship = "o{"
@@ -124,7 +133,10 @@ namespace mermaid_gen.generators
                     {
                         relationship.isIdentifying = false;
                     }
-                    _recognizedRelationships.Add(relationship);
+                    if (!_recognizedRelationships.RelationshipExists(relationship))
+                    {
+                        _recognizedRelationships.Add(relationship);
+                    }
                 }
             }
         }

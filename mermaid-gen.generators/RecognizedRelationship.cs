@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace mermaid_gen.generators
 {
@@ -10,11 +12,64 @@ namespace mermaid_gen.generators
         public string secondarySideRelationship { get; set; }
         public bool isIdentifying { get; set; }
         public string label { get; set; }
-        public bool secondaryDefined { get; set; }
+        //public bool secondaryDefined { get; set; }
 
         public RecognizedRelationship()
         {
             isIdentifying = false;
+        }
+
+        public RecognizedRelationship Invert()
+        {
+            var ret = new RecognizedRelationship
+            {
+                primary = secondary,
+                secondary = primary,
+                isIdentifying = isIdentifying,
+                label = label
+                // primarySideRelationship = secondarySideRelationship,
+                // secondarySideRelationship = primarySideRelationship,
+            };
+            switch (primarySideRelationship)
+            {
+                case "}o": ret.secondarySideRelationship = "o{"; break;
+                case "|o": ret.secondarySideRelationship = "o|"; break;
+                default: ret.secondarySideRelationship = primarySideRelationship; break;
+            }
+            switch (secondarySideRelationship)
+            {
+                case "o{": ret.primarySideRelationship = "}o"; break;
+                case "o|": ret.primarySideRelationship = "|o"; break;
+                default: ret.primarySideRelationship = secondarySideRelationship; break;
+            }
+            return ret;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is RecognizedRelationship)
+            {
+                var equals = primary == ((RecognizedRelationship)obj).primary 
+                && primary == ((RecognizedRelationship)obj).primary
+                && primarySideRelationship == ((RecognizedRelationship)obj).primarySideRelationship
+                && secondarySideRelationship == ((RecognizedRelationship)obj).secondarySideRelationship
+                && secondary == ((RecognizedRelationship)obj).secondary
+                && label == ((RecognizedRelationship)obj).label
+                && isIdentifying == ((RecognizedRelationship)obj).isIdentifying;
+                
+                return equals;
+            }
+            else return false;
+        }
+    }
+
+    public static class RecognizedRelationshipExtensions
+    {
+        public static bool RelationshipExists(this List<RecognizedRelationship> relationships, RecognizedRelationship relationship)
+        {
+            var invert = relationship.Invert();
+            var found = relationships.Contains(invert);
+            return found;
         }
     }
 }
