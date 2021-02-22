@@ -76,6 +76,9 @@ namespace mermaid_gen.generators
                     {
                         relationship.primarySideRelationship = "|o";
                         relationship.label = "may have";
+
+                        relationship.secondarySideRelationship = "o|";
+                        relationship.secondaryDefined = false;
                     }
                     else
                     {
@@ -112,7 +115,7 @@ namespace mermaid_gen.generators
 
                     if (relationship.secondary.GetProperties().Any(p => p.Name.StartsWith(entity.Name)) || relationship.secondary.GetProperties().Any(p => p.PropertyType == entity))
                     {
-                        
+
                         relationship.isIdentifying = true;
                     }
                     else
