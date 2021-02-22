@@ -2,11 +2,19 @@
 
 namespace mermaid_gen
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            (ExitCode exitCode, string parseResponseString) = ArgsParser.TryParse(args, out ArgsParser argsParsed);
+            if (exitCode == ExitCode.Success)
+            {
+                
+                switch (argsParsed.Command)
+                {
+
+                }
+            }
         }
     }
 }
