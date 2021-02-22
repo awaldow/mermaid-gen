@@ -1,3 +1,4 @@
+# mermaid-gen
 ## Installation
 1. Install as a [global tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools#install-a-global-tool)
     ```
