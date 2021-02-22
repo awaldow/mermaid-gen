@@ -9,9 +9,10 @@ namespace mermaid_gen
         public MermaidDiagramType DiagramType { get; set; }
         public string InputAssemblyPath { get; set; }
         public string OutputPath { get; set; }
+        public GenerationType GenerationType { get; set; }
 
         public static readonly string[] acceptedCommands = { "generate", "_generate", "--help" };
-        private static readonly string[] acceptedArgs = { "-a", "--input-assembly-path", "-t", "--diagram-type", "-o", "--output-path", };
+        private static readonly string[] acceptedArgs = { "-a", "--input-assembly-path", "-t", "--diagram-type", "-o", "--output-path", "-g", "--generation-type" };
 
         public static (ExitCode, string) TryParse(string[] args, out ArgsParser argsParser)
         {
@@ -59,6 +60,22 @@ namespace mermaid_gen
                                     return (ExitCode.Error, $"");
                             }
                             break;
+                        case "-g":
+                        case "--generation-type":
+                            if (acceptedArgs.Contains(args[i + 1]))
+                                return (ExitCode.Error, $"");
+                            switch (args[i + 1])
+                            {
+                                case "no-fluent":
+                                    argsParser.GenerationType = GenerationType.NonFluent;
+                                    break;
+                                case "fluent":
+                                    argsParser.GenerationType = GenerationType.Fluent;
+                                    break;
+                                default: // If we got here, someone is requesting an unsupported DiagramType
+                                    return (ExitCode.Error, $"");
+                            }
+                            break;
                         default: // If we got here, we have an unbalanced set of args
                             return (ExitCode.Error, $"");
                     }
@@ -80,6 +97,12 @@ namespace mermaid_gen
         Success = 0,
         CommandUnknown = 1,
         Error = 2
+    }
+
+    public enum GenerationType
+    {
+        NonFluent = 0,
+        Fluent = 1
     }
 
     public enum MermaidDiagramType
