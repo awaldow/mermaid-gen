@@ -1,0 +1,55 @@
+name: mermaid-gen-$(Date:yyyyMMdd)$(Rev:.r)
+trigger: none
+pr: none
+
+variables:
+- name: buildConfiguration
+  value: 'Release'
+- name: projectPath
+  value: '**/mermaid-gen.csproj'
+- name: testProjectPath
+  value: '**/mermaid-gen.[Tt]ests/*.csproj'
+
+stages:
+- stage: 'Push'
+  displayName: 'Push to artifacts feed'
+  jobs: 
+  - job: 'Push'
+    displayName: 'Push job'
+    pool:
+      vmImage: 'windows-2019'
+
+    steps:
+    - checkout: none
+    - task: DownloadPipelineArtifact@2
+      displayName: 'get mermaid-gen drop'
+      inputs:
+        buildType: 'specific'
+        project: '51946b29-5d2b-4dff-9538-44c49682dbde'
+        definition: '6'
+        buildVersionToDownload: 'latest'
+        artifactName: 'drop'
+        targetPath: '$(System.ArtifactsDirectory)'
+
+    - task: NuGetAuthenticate@0
+      displayName: 'Nuget Authenticate'
+
+    - task: NuGetCommand@2
+      displayName: 'push to nuget'
+      inputs:
+        command: 'push'
+        packagesToPush: '$(System.ArtifactsDirectory)/*.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'nuget.org'
+
+    # - task: DotNetCoreCLI@2
+    #   displayName: "dotnet push"
+    #   inputs:
+    #     command: 'push'
+    #     packagesToPush: '$(System.ArtifactsDirectory)\*.nupkg'
+    #     nuGetFeedType: 'internal'
+    #     publishVstsFeed: '8c518764-12c4-49f9-be20-50b7f4793712'
+
+    # - script: dotnet nuget push --skip-duplicate --source "tesselatedsky" --api-key az *.nupkg
+    #   workingDirectory: $(System.ArtifactsDirectory)
+    #   displayName: 'Push package to artifacts feed'

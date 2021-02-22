@@ -1,0 +1,88 @@
+name: mermaid-gen-$(Date:yyyyMMdd)$(Rev:.r)
+trigger: none
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+    - README.md
+    - LICENSE.md
+
+variables:
+- name: buildConfiguration
+  value: 'Release'
+- name: mainProjectPath
+  value: '**/mermaid-gen.csproj'
+- name: testProjectPath
+  value: '**/mermaid-gen.[Tt]ests/*.csproj'
+
+stages:
+- stage: 'Build'
+  displayName: 'Build and Test mermaid-gen'
+  jobs: 
+  - job: 'BuildAndTest'
+    pool:
+      vmImage: 'windows-2019'
+
+    steps:
+    - task: NuGetToolInstaller@0
+      displayName: 'Use NuGet 5.7'
+      inputs:
+        versionSpec: 5.7
+        
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk 5.x'
+      inputs:
+        version: 5.x
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: restore
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        arguments: '--configuration $(buildConfiguration)'
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet test'
+      inputs:
+        command: test
+        projects: '$(testProjectPath)'
+        arguments: '--configuration $(buildConfiguration) --collect "XPlat Code coverage"'
+        publishTestResults: true
+        testRunTitle: openapi-to-terraform.UnitTests  
+
+    - script: 'dotnet tool install --global dotnet-reportgenerator-globaltool --version 4.5.8'  
+      displayName: 'Install ReportGenerator tool'  
+
+    - script: 'reportgenerator -reports:$(Agent.TempDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:"HtmlInline_AzurePipelines;Cobertura;Badges"'  
+      displayName: 'Create reports'  
+    
+    - task: PublishCodeCoverageResults@1  
+      displayName: 'Publish code coverage'
+      inputs:  
+        codeCoverageTool: Cobertura  
+        summaryFileLocation: '$(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml'  
+    # - task: DotNetCoreCLI@2
+    #   displayName: 'dotnet publish'
+    #   inputs:
+    #     command: publish
+    #     publishWebProjects: false
+    #     projects: '$(projectPath)'
+    #     arguments: '--configuration $(buildConfiguration) --output $(build.artifactstagingdirectory)'
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet pack'
+      inputs: 
+        command: 'pack'
+        arguments: '$(mainProjectPath)'
+        outputDir: '$(Build.ArtifactStagingDirectory)'
+        configuration: '$(buildConfiguration)'
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: $(Build.ArtifactStagingDirectory)
+        artifactName: 'drop'
