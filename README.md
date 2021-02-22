@@ -17,4 +17,4 @@
     * [outputDir] = output path (including file name) for mermaid markdown
 
 ## Support
-Currently this utility is targeted at EF Core libraries using *ONLY* conventions and *NOT* fluent configuration. There are switches for class diagrams and fluent EF Core entity configurations but they do not do anything.
+Currently this utility is targeted at EF Core libraries using *ONLY* conventions and *NOT* fluent configuration. There are switches for class diagrams and fluent EF Core entity configurations but they do not do anything yet.
