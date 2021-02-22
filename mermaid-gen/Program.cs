@@ -39,16 +39,24 @@ namespace mermaid_gen
                                                     var erGenerator = new ErNonFluentGenerator(startupAssembly.GetTypes().ToList());
                                                     erGenerator.Generate();
                                                     Console.WriteLine($"Mermaid ER diagram generated from {argsParsed.InputAssemblyPath}");
-                                                    try
+                                                    if (argsParsed.OutputPath == "stdout")
                                                     {
-                                                        File.WriteAllText(argsParsed.OutputPath, erGenerator.ErDiagram);
+                                                        Console.WriteLine(erGenerator.ErDiagram);
+                                                        return (int)ExitCode.Success;
                                                     }
-                                                    catch (Exception e)
+                                                    else
                                                     {
-                                                        Console.WriteLine(e.Message);
-                                                        return (int)ExitCode.Error;
+                                                        try
+                                                        {
+                                                            File.WriteAllText(argsParsed.OutputPath, erGenerator.ErDiagram);
+                                                        }
+                                                        catch (Exception e)
+                                                        {
+                                                            Console.WriteLine(e.Message);
+                                                            return (int)ExitCode.Error;
+                                                        }
+                                                        return (int)exitCode;
                                                     }
-                                                    return (int)exitCode;
                                                 }
                                             case GenerationType.Fluent:
                                                 {
@@ -69,17 +77,13 @@ namespace mermaid_gen
                                     }
                             }
                         }
-                    case "_generate":
-                        {
-                            return (int)exitCode;
-                        }
                     case "--help":
                         {
                             Console.WriteLine("Usage -- mermaid-gen {--help|generate {args}}");
                             Console.WriteLine("\t{args}:");
                             Console.WriteLine("\t\t-a,--input-assembly-file\tpath to dll");
                             Console.WriteLine("\t\t-t,--diagram-type\t\ttype of Mermaid diagram to generate (options are {er | class}). Defaults to er");
-                            Console.WriteLine("\t\t-o,--output-path\t\toutput path for mermaid diagram, including file name");
+                            Console.WriteLine("\t\t-o,--output-path\t\toutput path for mermaid diagram, including file name. provide the string 'stdout' to get command line output");
                             Console.WriteLine("\t\t-g,--generation-type\t\tgeneration type (options are {no-fluent | fluent}). If you are using any fluent configuration, use fluent; otherwise, use no-fluent. Defaults to no-fluent");
                             return (int)ExitCode.Success;
                         }
