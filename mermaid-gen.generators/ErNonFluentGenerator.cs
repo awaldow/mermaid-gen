@@ -106,17 +106,18 @@ namespace mermaid_gen.generators
                         secondary = prop.PropertyType.GenericTypeArguments[0],
                         secondaryDefined = false,
                         primarySideRelationship = "||",
-                        label = "has"
+                        label = "has",
+                        secondarySideRelationship = "o{"
                     };
 
                     if (relationship.secondary.GetProperties().Any(p => p.Name.StartsWith(entity.Name)) || relationship.secondary.GetProperties().Any(p => p.PropertyType == entity))
                     {
-                        relationship.secondarySideRelationship = "o{";
+                        
                         relationship.isIdentifying = true;
                     }
                     else
                     {
-                        relationship.secondarySideRelationship = "o{";
+                        relationship.isIdentifying = false;
                     }
                     _recognizedRelationships.Add(relationship);
                 }
