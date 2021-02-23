@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace mermaid_gen.generators
 {
@@ -12,7 +11,6 @@ namespace mermaid_gen.generators
         public string secondarySideRelationship { get; set; }
         public bool isIdentifying { get; set; }
         public string label { get; set; }
-        //public bool secondaryDefined { get; set; }
 
         public RecognizedRelationship()
         {
@@ -27,8 +25,6 @@ namespace mermaid_gen.generators
                 secondary = primary,
                 isIdentifying = isIdentifying,
                 label = label
-                // primarySideRelationship = secondarySideRelationship,
-                // secondarySideRelationship = primarySideRelationship,
             };
             switch (primarySideRelationship)
             {
@@ -60,6 +56,11 @@ namespace mermaid_gen.generators
                 return equals;
             }
             else return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Tuple.Create(primary.Name, secondary.Name, primarySideRelationship, secondarySideRelationship).GetHashCode();
         }
     }
 

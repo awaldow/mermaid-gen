@@ -23,5 +23,4 @@
   <ItemGroup>
     <ProjectReference Include="..\mermaid-gen.generators\mermaid-gen.generators.csproj" />
   </ItemGroup>
-  
 </Project>
