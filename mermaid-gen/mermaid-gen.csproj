@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>mermaid_gen</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
@@ -10,7 +10,7 @@
     <PackageId>mermaid-gen</PackageId>
     <ToolCommandName>mermaid-gen</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
-    <PackageVersion>0.0.1</PackageVersion>
+    <PackageVersion>0.0.2</PackageVersion>
     <Authors>Addison Waldow</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/awaldow/mermaid-gen</RepositoryUrl>
