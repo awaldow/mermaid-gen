@@ -25,8 +25,8 @@ stages:
       displayName: 'get mermaid-gen drop'
       inputs:
         buildType: 'specific'
-        project: '51946b29-5d2b-4dff-9538-44c49682dbde'
-        definition: '6'
+        project: '5bfb87d5-1a46-4bab-b46a-3c0d2f922229'
+        definition: '11'
         buildVersionToDownload: 'latest'
         artifactName: 'drop'
         targetPath: '$(System.ArtifactsDirectory)'
