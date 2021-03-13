@@ -186,6 +186,11 @@ namespace mermaid_gen.generators
                                 }
 
                             }
+                            else if(prop.PropertyType.IsNullable())
+                            {
+                                var propTypeName = Nullable.GetUnderlyingType(prop.PropertyType).Name;
+                                ret += $"\t\tnullable{Char.ToUpperInvariant(propTypeName[0]) + propTypeName.ToLower().Substring(1)} {prop.Name}\n";
+                            }
                             else
                             {
                                 ret += $"\t\t{prop.PropertyType.Name.ToLower()} {prop.Name}\n";
