@@ -1,0 +1,83 @@
+erDiagram
+	DOCTMPTREPEATDOC {
+		int32 ID
+		int32 DocumentTemplateID
+		DOCUMENTTEMPLATE DocumentTemplate
+		int32 RepeatingDocumentID
+		REPEATINGDOCUMENT RepeatingDocument
+		string FieldTag
+		string RepeatingDocName
+	}
+	DOCUMENTSIGNATUREMAPPING {
+		int32 Id
+		string FieldTag
+		arrayOfBYTEs SignatureImage
+		nullable`1 RenderHeightPixels
+		nullable`1 RenderWidthPixels
+		string ContentType
+		listOfDOCUMENTTEMPLATEs DocumentTemplates
+	}
+	DOCUMENTTEMPLATE {
+		int32 ID
+		string DocCode
+		string DocName
+		string Description
+		string SharePointDocID
+		string LiveVersion
+		icollectionOfFIELDMAPPINGs FieldMappings
+		icollectionOfDOCTMPTREPEATDOCs DocTmptRepeatDocs
+		nullable`1 DocumentSignatureMappingId
+		DOCUMENTSIGNATUREMAPPING DocumentSignatureMapping
+		icollectionOfDOCUMENTTEMPLATESTANDARDVERBIAGEs DocumentTemplateStandardVerbiages
+	}
+	DOCUMENTTEMPLATESTANDARDVERBIAGE {
+		int32 ID
+		int32 DocumentTemplateId
+		DOCUMENTTEMPLATE DocumentTemplate
+		int32 StandardVerbiageId
+		STANDARDVERBIAGE StandardVerbiage
+		string FieldTag
+	}
+	DRIVEITEMWITHDATA {
+		string Id
+		string Name
+		string DocCode
+		string Description
+	}
+	FIELDMAPPING {
+		int32 ID
+		int32 FieldNumber
+		string FieldName
+		string ExampleData
+		int32 DocumentTemplateID
+		DOCUMENTTEMPLATE DocumentTemplate
+	}
+	REPEATFIELDMAPPING {
+		int32 ID
+		int32 RepeatingDocumentID
+		int32 ColumnId
+		string FieldName
+		string ExampleData
+	}
+	REPEATINGDOCUMENT {
+		int32 ID
+		string DocName
+		string Description
+		icollectionOfREPEATFIELDMAPPINGs RepeatFieldMappings
+		icollectionOfDOCTMPTREPEATDOCs DocTmptRepeatDocs
+		int32 ColumnCount
+	}
+	STANDARDVERBIAGE {
+		int32 Id
+		string StandardVerbiageDescription
+		string StandardVerbiageContent
+		string StandardVerbiageFieldName
+		icollectionOfDOCUMENTTEMPLATESTANDARDVERBIAGEs DocumentTemplateStandardVerbiages
+	}
+	DOCTMPTREPEATDOC }o--|| DOCUMENTTEMPLATE : has
+	DOCTMPTREPEATDOC }o--|| REPEATINGDOCUMENT : has
+	DOCUMENTSIGNATUREMAPPING ||--o{ DOCUMENTTEMPLATE : has
+	DOCUMENTTEMPLATE ||--o{ FIELDMAPPING : has
+	DOCUMENTTEMPLATE ||--o{ DOCUMENTTEMPLATESTANDARDVERBIAGE : has
+	DOCUMENTTEMPLATESTANDARDVERBIAGE }o--|| STANDARDVERBIAGE : has
+	REPEATINGDOCUMENT ||--o{ REPEATFIELDMAPPING : has

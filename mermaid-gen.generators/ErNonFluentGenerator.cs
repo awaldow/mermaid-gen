@@ -92,7 +92,7 @@ namespace mermaid_gen.generators
                         }
                         // many to one from secondary
                         else if (prop.PropertyType.GetProperties().Any(p =>
-                            typeof(IEnumerable).IsAssignableFrom(p.PropertyType) && p.PropertyType != typeof(string) && p.PropertyType.GetGenericArguments()[0] == entity)
+                            typeof(IEnumerable).IsAssignableFrom(p.PropertyType) && p.PropertyType != typeof(string) && p.PropertyType.GetEnumeratedType() == entity)
                         )
                         {
                             relationship.primarySideRelationship = "}o";
@@ -115,12 +115,13 @@ namespace mermaid_gen.generators
                         _recognizedRelationships.Add(relationship);
                     }
                 }
-                else if (typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string)) // Found a one-to-many relationship by convention
+                else if (typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string) && _assemblyTypes.Any(t => t.Name == prop.PropertyType.GetEnumeratedType().Name)) // Found a one-to-many relationship by convention
                 {
+                    // TODO: Handle arrays here
                     var relationship = new RecognizedRelationship
                     {
                         primary = entity,
-                        secondary = prop.PropertyType.GenericTypeArguments[0],
+                        secondary = prop.PropertyType.GetEnumeratedType(),
                         primarySideRelationship = "||",
                         label = "has",
                         secondarySideRelationship = "o{"
@@ -174,7 +175,16 @@ namespace mermaid_gen.generators
                         {
                             if (typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string))
                             {
-                                ret += $"\t\t{prop.PropertyType.Name.ToLower().Remove(prop.PropertyType.Name.IndexOf('`'))}Of{prop.PropertyType.GetGenericArguments()[0].Name.ToUpper()}s {prop.Name}\n";
+                                var type = prop.PropertyType.GetEnumeratedType();
+                                if (prop.PropertyType.Name.IndexOf('`') > 0) // Colleciton
+                                {
+                                    ret += $"\t\t{prop.PropertyType.Name.ToLower().Remove(prop.PropertyType.Name.IndexOf('`'))}Of{type.Name.ToUpper()}s {prop.Name}\n";
+                                }
+                                else if(prop.PropertyType.Name.IndexOf('[') > 0) // Array
+                                {
+                                    ret += $"\t\tarrayOf{type.Name.ToUpper()}s {prop.Name}\n";
+                                }
+
                             }
                             else
                             {
