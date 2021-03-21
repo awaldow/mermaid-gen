@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace mermaid_gen.generators
@@ -34,8 +35,13 @@ namespace mermaid_gen.generators
         {
             foreach (var entity in _assemblyTypes)
             {
-                GenerateRelationships(entity);
-                _erDiagram.AppendLine(GenerateEntitySection(entity));
+                var compilerGenerated = entity.GetCustomAttributes().Any(a => a is CompilerGeneratedAttribute);
+                var abstractEntity = entity.IsAbstract;
+                if (!compilerGenerated && !abstractEntity)
+                {
+                    GenerateRelationships(entity);
+                    _erDiagram.AppendLine(GenerateEntitySection(entity));
+                }
             }
             foreach (var relationship in _recognizedRelationships)
             {
