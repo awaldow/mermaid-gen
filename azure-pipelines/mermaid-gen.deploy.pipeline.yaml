@@ -26,7 +26,7 @@ stages:
       inputs:
         buildType: 'specific'
         project: '5bfb87d5-1a46-4bab-b46a-3c0d2f922229'
-        definition: '11'
+        definition: '13'
         buildVersionToDownload: 'latest'
         artifactName: 'drop'
         targetPath: '$(System.ArtifactsDirectory)'
